@@ -1,0 +1,308 @@
+{
+	"address": "5eMqZWb3UgPtW9yZg2LfiLuUQVChJ5tUAZmNfz2oqBsd",
+	"metadata": {
+		"name": "resolution",
+		"version": "0.1.0",
+		"spec": "0.1.0",
+		"description": "Created with Anchor"
+	},
+	"instructions": [
+		{
+			"name": "approve_resolution",
+			"discriminator": [239, 215, 26, 98, 160, 130, 11, 221],
+			"accounts": [
+				{
+					"name": "signer",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "owner",
+					"relations": ["resolution_account"]
+				},
+				{
+					"name": "resolution_account",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [114, 101, 115, 111, 108, 117, 116, 105, 111, 110]
+							},
+							{
+								"kind": "account",
+								"path": "owner"
+							}
+						]
+					}
+				}
+			],
+			"args": []
+		},
+		{
+			"name": "close_resolution",
+			"discriminator": [55, 199, 54, 160, 230, 86, 194, 107],
+			"accounts": [
+				{
+					"name": "owner",
+					"writable": true,
+					"signer": true,
+					"relations": ["resolution_account"]
+				},
+				{
+					"name": "stake_account",
+					"writable": true,
+					"relations": ["resolution_account"]
+				},
+				{
+					"name": "resolution_account",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [114, 101, 115, 111, 108, 117, 116, 105, 111, 110]
+							},
+							{
+								"kind": "account",
+								"path": "owner"
+							}
+						]
+					}
+				},
+				{
+					"name": "clock",
+					"address": "SysvarC1ock11111111111111111111111111111111"
+				},
+				{
+					"name": "stake_history",
+					"address": "SysvarStakeHistory1111111111111111111111111"
+				},
+				{
+					"name": "stake_program"
+				}
+			],
+			"args": []
+		},
+		{
+			"name": "deactivate_resolution_stake",
+			"discriminator": [205, 245, 135, 247, 230, 38, 47, 198],
+			"accounts": [
+				{
+					"name": "owner",
+					"writable": true,
+					"signer": true,
+					"relations": ["resolution_account"]
+				},
+				{
+					"name": "stake_account",
+					"writable": true,
+					"relations": ["resolution_account"]
+				},
+				{
+					"name": "resolution_account",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [114, 101, 115, 111, 108, 117, 116, 105, 111, 110]
+							},
+							{
+								"kind": "account",
+								"path": "owner"
+							}
+						]
+					}
+				},
+				{
+					"name": "clock",
+					"address": "SysvarC1ock11111111111111111111111111111111"
+				},
+				{
+					"name": "stake_program"
+				}
+			],
+			"args": []
+		},
+		{
+			"name": "initialize_resolution",
+			"discriminator": [114, 234, 73, 65, 38, 194, 180, 145],
+			"accounts": [
+				{
+					"name": "owner",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "resolution_account",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [114, 101, 115, 111, 108, 117, 116, 105, 111, 110]
+							},
+							{
+								"kind": "account",
+								"path": "owner"
+							}
+						]
+					}
+				},
+				{
+					"name": "stake_account",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "validator_vote_account"
+				},
+				{
+					"name": "stake_config"
+				},
+				{
+					"name": "rent",
+					"address": "SysvarRent111111111111111111111111111111111"
+				},
+				{
+					"name": "clock",
+					"address": "SysvarC1ock11111111111111111111111111111111"
+				},
+				{
+					"name": "stake_history",
+					"address": "SysvarStakeHistory1111111111111111111111111"
+				},
+				{
+					"name": "stake_program"
+				},
+				{
+					"name": "system_program",
+					"address": "11111111111111111111111111111111"
+				}
+			],
+			"args": [
+				{
+					"name": "stake_amount",
+					"type": "u64"
+				},
+				{
+					"name": "lockup_duration",
+					"type": "i64"
+				},
+				{
+					"name": "text",
+					"type": "string"
+				}
+			]
+		}
+	],
+	"accounts": [
+		{
+			"name": "ResolutionAccount",
+			"discriminator": [114, 112, 17, 53, 35, 50, 130, 3]
+		}
+	],
+	"errors": [
+		{
+			"code": 6000,
+			"name": "CustomError",
+			"msg": "Custom error message"
+		},
+		{
+			"code": 6001,
+			"name": "InvalidStakeProgram",
+			"msg": "Invalid Stake Program"
+		},
+		{
+			"code": 6002,
+			"name": "InvalidVoteAccount",
+			"msg": "Invalid Vote Account"
+		},
+		{
+			"code": 6003,
+			"name": "InvalidStakeAccount",
+			"msg": "Invalid Stake Account"
+		},
+		{
+			"code": 6004,
+			"name": "InvalidNumApprovers",
+			"msg": "Invalid number of approvers"
+		},
+		{
+			"code": 6005,
+			"name": "NotEnoughApprovals",
+			"msg": "Not enough approvals"
+		},
+		{
+			"code": 6006,
+			"name": "InvalidApprover",
+			"msg": "Invalid approver"
+		},
+		{
+			"code": 6007,
+			"name": "InvalidResolutionSignature",
+			"msg": "Invalid resolution signature"
+		},
+		{
+			"code": 6008,
+			"name": "LockupInForce",
+			"msg": "Lockup in force"
+		}
+	],
+	"types": [
+		{
+			"name": "ResolutionAccount",
+			"type": {
+				"kind": "struct",
+				"fields": [
+					{
+						"name": "owner",
+						"type": "pubkey"
+					},
+					{
+						"name": "text",
+						"type": "string"
+					},
+					{
+						"name": "approvers",
+						"type": {
+							"vec": "pubkey"
+						}
+					},
+					{
+						"name": "num_approvals",
+						"type": "u8"
+					},
+					{
+						"name": "stake_amount",
+						"type": "u64"
+					},
+					{
+						"name": "stake_account",
+						"type": "pubkey"
+					},
+					{
+						"name": "start_time",
+						"type": "i64"
+					},
+					{
+						"name": "end_time",
+						"type": "i64"
+					},
+					{
+						"name": "bump",
+						"type": "u8"
+					}
+				]
+			}
+		}
+	],
+	"constants": [
+		{
+			"name": "SEED",
+			"type": "string",
+			"value": "\"anchor\""
+		}
+	]
+}
