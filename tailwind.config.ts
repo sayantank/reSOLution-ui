@@ -57,7 +57,8 @@ export default {
 				sm: "calc(var(--radius) - 4px)",
 			},
 			fontFamily: {
-				handwriting: ["var(--font-handwriting)"],
+				handwriting: ["var(--font-pangolin)"],
+				logo: ["var(--font-gloria-hallelujah)"],
 			},
 		},
 	},

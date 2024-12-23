@@ -1,4 +1,5 @@
-import type { Connection } from "@solana/web3.js";
+import type { BN } from "@coral-xyz/anchor";
+import { type Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -11,6 +12,14 @@ export function cn(...inputs: ClassValue[]) {
 
 export function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function getResolutionPDA(owner: PublicKey, programId: PublicKey) {
+	const [resolutionPDA] = PublicKey.findProgramAddressSync(
+		[Buffer.from("resolution"), owner.toBuffer()],
+		programId,
+	);
+	return resolutionPDA;
 }
 
 export async function waitForConfirmation(
@@ -53,4 +62,20 @@ export async function waitForConfirmation(
 	]);
 
 	return confirmed;
+}
+
+export function lamportsToSol(lamports: BN) {
+	const sol = lamports.toNumber() / LAMPORTS_PER_SOL;
+	return sol % 1 === 0 ? sol.toString() : sol.toFixed(3);
+}
+
+export function calculateDays(start: BN, end: BN) {
+	const diff = end.sub(start).toNumber();
+
+	const now = Date.now() / 1000;
+
+	return {
+		days: Math.floor(diff / (24 * 60 * 60)),
+		remaining: Math.floor((end.toNumber() - now) / (24 * 60 * 60)),
+	};
 }

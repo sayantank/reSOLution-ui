@@ -1,26 +1,28 @@
 import type { Metadata } from "next";
-import {
-	Indie_Flower,
-	Geist,
-	Gluten,
-	Patrick_Hand,
-	Gloria_Hallelujah,
-} from "next/font/google";
+import { Geist, Gloria_Hallelujah, Pangolin } from "next/font/google";
 
 import "./globals.css";
 // Default styles that can be overridden by your app
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/sonner";
+import WalletButton from "@/components/wallet-btn";
+import Link from "next/link";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
 	subsets: ["latin"],
 });
 
-const indieFlower = Gloria_Hallelujah({
+const pangolin = Pangolin({
 	weight: "400",
-	variable: "--font-handwriting",
+	variable: "--font-pangolin",
+	subsets: ["latin"],
+});
+
+const gloriaHallelujah = Gloria_Hallelujah({
+	weight: "400",
+	variable: "--font-gloria-hallelujah",
 	subsets: ["latin"],
 });
 
@@ -37,14 +39,15 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${indieFlower.variable} antialiased`}
+				className={`${geistSans.variable} ${pangolin.variable} ${gloriaHallelujah.variable} antialiased font-handwriting`}
 			>
 				<Providers>
-					<main className="h-dvh overflow-y-auto relative font-handwriting">
+					<main className="h-dvh overflow-y-auto relative">
 						<div className="absolute top-0 left-0 h-16 w-full flex justify-between px-6 py-4">
-							<h1 className="text-2xl font-bold font-handwriting">
-								reSOLution
-							</h1>
+							<Link href="/">
+								<h1 className="text-2xl font-bold font-logo">reSOLution</h1>
+							</Link>
+							<WalletButton />
 						</div>
 						{children}
 					</main>

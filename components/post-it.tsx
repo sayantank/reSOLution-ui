@@ -54,7 +54,7 @@ const PostItNote: React.FC<PostItNoteProps> = ({
 						placeholder={placeholder}
 						className={cn(
 							"w-full h-full resize-none bg-transparent no-scrollbar",
-							"font-handwriting",
+							"font-logo",
 							"focus:outline-none",
 							"placeholder:text-gray-500",
 							"absolute inset-0",
@@ -62,7 +62,16 @@ const PostItNote: React.FC<PostItNoteProps> = ({
 						)}
 					/>
 				) : (
-					children
+					<div
+						className={cn(
+							"w-full h-full resize-none bg-transparent no-scrollbar",
+							"font-logo",
+							"absolute inset-0",
+							"p-6 pt-14",
+						)}
+					>
+						{children}
+					</div>
 				)}
 			</div>
 		</div>

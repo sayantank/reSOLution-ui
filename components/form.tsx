@@ -5,7 +5,7 @@ import PostItNote from "./post-it";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Button } from "./ui/button";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { cn, waitForConfirmation } from "@/lib/utils";
+import { cn, getResolutionPDA, waitForConfirmation } from "@/lib/utils";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { SettingsIcon } from "lucide-react";
@@ -36,6 +36,7 @@ import { BN, Program } from "@coral-xyz/anchor";
 import type { Resolution } from "@/lib/program";
 import { useAnchorProvider } from "@/hooks/use-anchor-provider";
 import { toast } from "sonner";
+import WalletButton from "./wallet-btn";
 
 const IDL = require("@/public/idl.json");
 
@@ -89,10 +90,7 @@ export default function ResolutionForm() {
 		const lamports = new BN(data.stake * LAMPORTS_PER_SOL);
 		const duration = new BN(data.duration * 24 * 60 * 60 * 1000);
 
-		const [resolutionPDA] = PublicKey.findProgramAddressSync(
-			[Buffer.from("resolution"), publicKey.toBuffer()],
-			program.programId,
-		);
+		const resolutionPDA = getResolutionPDA(publicKey, program.programId);
 		const stakeKeypair = Keypair.generate();
 
 		const ix = await program.methods
@@ -211,7 +209,7 @@ export default function ResolutionForm() {
 						/>
 
 						<DialogClose asChild>
-							<Button className="text-lg py-6">Continue</Button>
+							<Button>Continue</Button>
 						</DialogClose>
 					</DialogContent>
 				</div>
@@ -230,14 +228,7 @@ export default function ResolutionForm() {
 				/>
 
 				{!connected ? (
-					<Button
-						onClick={() => {
-							setVisible(true);
-						}}
-						className="w-full text-lg py-6"
-					>
-						Connect Wallet
-					</Button>
+					<WalletButton className="w-full" />
 				) : (
 					<div>
 						<div className="flex items-center space-x-2">
@@ -318,7 +309,7 @@ export default function ResolutionForm() {
 						</div>
 						<Button
 							type="submit"
-							className="w-full text-lg py-6 mt-4"
+							className="w-full mt-4"
 							disabled={!formState.isValid || formState.isSubmitting}
 						>
 							Submit
