@@ -19,7 +19,7 @@ import {
 } from "@solana/web3.js";
 import PostItNote from "./post-it";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "./ui/button";
 import {
 	Card,
@@ -63,6 +63,8 @@ export default function ResolutionUI({
 	const { connection } = useConnection();
 	const { connected, publicKey, signTransaction } = useWallet();
 	const provider = useAnchorProvider();
+
+	const [isShareLinkCopied, setIsShareLinkCopied] = useState(false);
 
 	const isOwner = useMemo(() => {
 		if (!connected || publicKey == null) {
@@ -122,6 +124,20 @@ export default function ResolutionUI({
 			isResolutionReady && isDeactivated && currentEpoch >= deactivationEpoch
 		);
 	}, [isDeactivated, isResolutionReady, epochData, stakeData]);
+
+	async function copyToClipboard() {
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		try {
+			await navigator.clipboard.writeText(window.location.href);
+			setIsShareLinkCopied(true);
+			setTimeout(() => setIsShareLinkCopied(false), 2000); // Reset after 2 seconds
+		} catch (err) {
+			console.error("Failed to copy text: ", err);
+		}
+	}
 
 	async function handleApprove(e: React.MouseEvent<HTMLButtonElement>) {
 		e.preventDefault();
@@ -282,6 +298,15 @@ export default function ResolutionUI({
 				<p className={cn("text-lg font-medium")}>
 					{resolutionData.owner.toString().slice(0, 6)}...'s resolution,
 				</p>
+				<button
+					type="button"
+					onClick={copyToClipboard}
+					className={cn(
+						"text-lg font-medium hover:underline cursor-pointer transition-all",
+					)}
+				>
+					{isShareLinkCopied ? "Link copied!" : "Share"}
+				</button>
 			</div>
 			<PostItNote className="mb-8">{resolutionData.text}</PostItNote>
 			{stakeData != null && (
