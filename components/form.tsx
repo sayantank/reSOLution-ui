@@ -4,8 +4,12 @@ import { useEffect } from "react";
 import PostItNote from "./post-it";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Button } from "./ui/button";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { cn, getResolutionPDA, waitForConfirmation } from "@/lib/utils";
+import {
+	cn,
+	createVersionedTransaction,
+	getResolutionPDA,
+	handleSendAndConfirmTransaction,
+} from "@/lib/utils";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { SettingsIcon } from "lucide-react";
@@ -28,15 +32,15 @@ import {
 	SYSVAR_CLOCK_PUBKEY,
 	SYSVAR_RENT_PUBKEY,
 	SYSVAR_STAKE_HISTORY_PUBKEY,
-	TransactionMessage,
-	VersionedTransaction,
+	type VersionedTransaction,
 } from "@solana/web3.js";
 import { BN, Program } from "@coral-xyz/anchor";
 
 import type { Resolution } from "@/lib/program";
 import { useAnchorProvider } from "@/hooks/use-anchor-provider";
-import { toast } from "sonner";
 import WalletButton from "./wallet-btn";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const IDL = require("@/public/idl.json");
 
@@ -54,8 +58,8 @@ type FormValues = {
 };
 
 export default function ResolutionForm() {
+	const router = useRouter();
 	const { connection } = useConnection();
-	const { setVisible } = useWalletModal();
 	const { connected, publicKey, signTransaction } = useWallet();
 
 	const { control, handleSubmit, setValue, formState, watch } =
@@ -88,13 +92,13 @@ export default function ResolutionForm() {
 		const program = new Program<Resolution>(IDL, provider);
 
 		const lamports = new BN(data.stake * LAMPORTS_PER_SOL);
-		const duration = new BN(data.duration * 24 * 60 * 60 * 1000);
+		const duration = new BN(data.duration * 24 * 60 * 60);
 
 		const resolutionPDA = getResolutionPDA(publicKey, program.programId);
 		const stakeKeypair = Keypair.generate();
 
 		const ix = await program.methods
-			.initializeResolution(lamports, duration, "Test")
+			.initializeResolution(lamports, duration, data.resolutionText)
 			.accountsStrict({
 				owner: publicKey,
 				resolutionAccount: resolutionPDA,
@@ -116,42 +120,31 @@ export default function ResolutionForm() {
 			)
 			.instruction();
 
-		const {
-			value: { blockhash },
-		} = await connection.getLatestBlockhashAndContext();
+		const transaction = await createVersionedTransaction(
+			connection,
+			[ix],
+			publicKey,
+		);
 
-		const messageV0 = new TransactionMessage({
-			payerKey: publicKey,
-			recentBlockhash: blockhash,
-			instructions: [ix],
-		}).compileToV0Message();
+		let signedTransaction: VersionedTransaction | undefined;
 
-		const transaction = new VersionedTransaction(messageV0);
-		const signedTransaction = await signTransaction(transaction);
+		try {
+			signedTransaction = await signTransaction(transaction);
+			// Add the sign for the new stake account
+			signedTransaction.sign([stakeKeypair]);
+		} catch (e) {
+			toast.error("Failed to sign transaction.");
+			return;
+		}
 
-		// Add the sign for the new stake account
-		signedTransaction.sign([stakeKeypair]);
+		const confirmed = await handleSendAndConfirmTransaction(
+			connection,
+			signedTransaction,
+		);
 
-		let txSignature: string | undefined;
-
-		toast.promise(connection.sendTransaction(signedTransaction), {
-			loading: "Submitting transaction...",
-			success: (result) => {
-				txSignature = result;
-				return "Transaction submitted successfully!";
-			},
-			error: "Failed to submit transaction.",
-		});
-
-		// TODO: Wait for confirmation
-
-		// if (txSignature != null) {
-		// 	toast.promise(waitForConfirmation(txSignature, connection), {
-		// 		loading: "Waiting for confirmation...",
-		// 		success: "Transaction confirmed!",
-		// 		error: "Failed to confirm transaction.",
-		// 	});
-		// }
+		if (confirmed) {
+			router.push(`/resolution/${publicKey.toString()}`);
+		}
 	}
 
 	return (
@@ -159,11 +152,11 @@ export default function ResolutionForm() {
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<div
 					className={cn(
-						"w-full flex items-center justify-between",
+						"w-full flex items-center justify-between mb-4",
 						publicKey != null ? "opacity-100" : "opacity-0",
 					)}
 				>
-					<p className={cn("text-lg font-medium mb-4")}>
+					<p className={cn("text-lg font-medium")}>
 						{publicKey?.toString().slice(0, 6)}...'s resolution,
 					</p>
 					<DialogTrigger>
@@ -216,7 +209,7 @@ export default function ResolutionForm() {
 				<Controller
 					control={control}
 					name="resolutionText"
-					rules={{ required: true, minLength: 1 }}
+					rules={{ required: true, minLength: 1, maxLength: 256 }}
 					render={({ field }) => (
 						<PostItNote
 							placeholder="Write your resolution..."

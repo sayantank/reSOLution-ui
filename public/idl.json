@@ -1,5 +1,5 @@
 {
-	"address": "5eMqZWb3UgPtW9yZg2LfiLuUQVChJ5tUAZmNfz2oqBsd",
+	"address": "3P9v3idHKsRsSg3FfwBE5YjPTzzdq4We4BVhvmZftmxZ",
 	"metadata": {
 		"name": "resolution",
 		"version": "0.1.0",
@@ -241,11 +241,16 @@
 		},
 		{
 			"code": 6007,
+			"name": "AlreadyApproved",
+			"msg": "Already approved"
+		},
+		{
+			"code": 6008,
 			"name": "InvalidResolutionSignature",
 			"msg": "Invalid resolution signature"
 		},
 		{
-			"code": 6008,
+			"code": 6009,
 			"name": "LockupInForce",
 			"msg": "Lockup in force"
 		}
@@ -271,8 +276,10 @@
 						}
 					},
 					{
-						"name": "num_approvals",
-						"type": "u8"
+						"name": "approved_by",
+						"type": {
+							"vec": "pubkey"
+						}
 					},
 					{
 						"name": "stake_amount",

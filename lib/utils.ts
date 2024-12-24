@@ -1,6 +1,14 @@
 import type { BN } from "@coral-xyz/anchor";
-import { type Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import {
+	type Connection,
+	LAMPORTS_PER_SOL,
+	PublicKey,
+	type TransactionInstruction,
+	TransactionMessage,
+	VersionedTransaction,
+} from "@solana/web3.js";
 import { clsx, type ClassValue } from "clsx";
+import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
 const TIMEOUT_MS = 15000;
@@ -64,7 +72,11 @@ export async function waitForConfirmation(
 	return confirmed;
 }
 
-export function lamportsToSol(lamports: BN) {
+export function lamportsToSol(lamports: BN | number) {
+	if (typeof lamports === "number") {
+		const sol = lamports / LAMPORTS_PER_SOL;
+		return sol % 1 === 0 ? sol.toString() : sol.toFixed(3);
+	}
 	const sol = lamports.toNumber() / LAMPORTS_PER_SOL;
 	return sol % 1 === 0 ? sol.toString() : sol.toFixed(3);
 }
@@ -78,4 +90,47 @@ export function calculateDays(start: BN, end: BN) {
 		days: Math.floor(diff / (24 * 60 * 60)),
 		remaining: Math.floor((end.toNumber() - now) / (24 * 60 * 60)),
 	};
+}
+
+export async function createVersionedTransaction(
+	connection: Connection,
+	ixs: TransactionInstruction[],
+	payerKey: PublicKey,
+) {
+	const {
+		value: { blockhash },
+	} = await connection.getLatestBlockhashAndContext();
+
+	const messageLegacy = new TransactionMessage({
+		payerKey,
+		recentBlockhash: blockhash,
+		instructions: ixs,
+	}).compileToLegacyMessage();
+
+	return new VersionedTransaction(messageLegacy);
+}
+
+export async function handleSendAndConfirmTransaction(
+	connection: Connection,
+	transaction: VersionedTransaction,
+) {
+	const sendPromise = connection.sendTransaction(transaction);
+
+	toast.promise(sendPromise, {
+		loading: "Submitting transaction...",
+		success: "Transaction submitted successfully!",
+		error: "Failed to submit transaction.",
+	});
+
+	const txSignature = await sendPromise;
+
+	const confirmationPromise = waitForConfirmation(txSignature, connection);
+
+	toast.promise(confirmationPromise, {
+		loading: "Waiting for confirmation...",
+		success: "Transaction confirmed!",
+		error: "Failed to confirm transaction.",
+	});
+
+	return await confirmationPromise;
 }

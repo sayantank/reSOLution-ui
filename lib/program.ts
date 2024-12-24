@@ -1,7 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
 
 export const programId = new PublicKey(
-	"5eMqZWb3UgPtW9yZg2LfiLuUQVChJ5tUAZmNfz2oqBsd",
+	"3P9v3idHKsRsSg3FfwBE5YjPTzzdq4We4BVhvmZftmxZ",
 );
 
 /**
@@ -11,7 +11,7 @@ export const programId = new PublicKey(
  * IDL can be found at `target/idl/resolution.json`.
  */
 export type Resolution = {
-	address: "5eMqZWb3UgPtW9yZg2LfiLuUQVChJ5tUAZmNfz2oqBsd";
+	address: "3P9v3idHKsRsSg3FfwBE5YjPTzzdq4We4BVhvmZftmxZ";
 	metadata: {
 		name: "resolution";
 		version: "0.1.0";
@@ -253,11 +253,16 @@ export type Resolution = {
 		},
 		{
 			code: 6007;
+			name: "alreadyApproved";
+			msg: "Already approved";
+		},
+		{
+			code: 6008;
 			name: "invalidResolutionSignature";
 			msg: "Invalid resolution signature";
 		},
 		{
-			code: 6008;
+			code: 6009;
 			name: "lockupInForce";
 			msg: "Lockup in force";
 		},
@@ -283,8 +288,10 @@ export type Resolution = {
 						};
 					},
 					{
-						name: "numApprovals";
-						type: "u8";
+						name: "approvedBy";
+						type: {
+							vec: "pubkey";
+						};
 					},
 					{
 						name: "stakeAmount";

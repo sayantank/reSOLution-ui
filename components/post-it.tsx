@@ -30,7 +30,7 @@ const PostItNote: React.FC<PostItNoteProps> = ({
 		<div
 			className={cn(
 				colorClasses[color],
-				"w-full h-96 sm:w-[32rem] sm:h-[32rem]",
+				"w-full h-96 sm:w-[32rem]",
 				"rounded-sm",
 				"shadow-md",
 				"transform rotate-1",
