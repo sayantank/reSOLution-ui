@@ -8,12 +8,6 @@ export default function WalletButton({ className }: { className?: string }) {
 	const { setVisible } = useWalletModal();
 	const { connected, publicKey, disconnect } = useWallet();
 
-	// if (connected) {
-	// 	return <Button type="button" className={cn(className, "text-lg py-6")}>
-	// 			Disco
-	// 	</Button>
-	// }
-
 	return (
 		<Button
 			onClick={() => {

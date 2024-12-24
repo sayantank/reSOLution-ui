@@ -42,14 +42,26 @@ export default function RootLayout({
 				className={`${geistSans.variable} ${pangolin.variable} ${gloriaHallelujah.variable} antialiased font-handwriting`}
 			>
 				<Providers>
-					<main className="h-dvh overflow-y-auto relative">
-						<div className="absolute top-0 left-0 h-16 w-full flex justify-between px-6 py-4">
+					<main className="h-dvh overflow-y-auto flex flex-col">
+						<div className="h-16 w-full flex items-center justify-between px-6 my-2 mb-4 sm:mb-0">
 							<Link href="/">
-								<h1 className="text-2xl font-bold font-logo">reSOLution</h1>
+								<h1 className="text-xl sm:text-2xl  font-bold font-logo">
+									reSOLution
+								</h1>
 							</Link>
 							<WalletButton />
 						</div>
-						{children}
+						<div className="flex-1">{children}</div>
+						<div className="flex justify-center mt-8 mb-2">
+							<p>
+								something by{" "}
+								<Link href="https://x.com/sayantanxyz" target="_blank">
+									<span className="hover:underline hover:font-medium ">
+										sayantan ㋡
+									</span>
+								</Link>
+							</p>
+						</div>
 					</main>
 					<Toaster />
 				</Providers>

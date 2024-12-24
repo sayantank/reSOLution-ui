@@ -49,7 +49,7 @@ export default async function ResolutionPage({
 	}
 
 	return (
-		<div className="flex pt-16 sm:pt-0 flex-col px-4 sm:px-0 items-stretch sm:items-center justify-center min-h-full w-full">
+		<div className="flex sm:pt-0 flex-col px-4 sm:px-0 items-stretch sm:items-center justify-center min-h-full w-full">
 			<ResolutionUI resolutionKey={resolutionPDA.toString()} owner={address} />
 		</div>
 	);
