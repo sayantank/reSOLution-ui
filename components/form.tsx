@@ -171,9 +171,11 @@ export default function ResolutionForm() {
 					)}
 					<DialogContent className="font-sans">
 						<DialogHeader>
-							<DialogTitle>Advanced Configuration</DialogTitle>
+							<DialogTitle>Validator Configuration</DialogTitle>
 							<DialogDescription>
-								Configure the validator you want to delegate your SOL to.
+								Configure the validator{" "}
+								<span className="underline">vote account</span> you want to
+								delegate your SOL to.
 							</DialogDescription>
 						</DialogHeader>
 

@@ -37,6 +37,7 @@ import { MAX_U64 } from "@/app/consts";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import { cluster } from "@/app/providers";
+import { Skeleton } from "./ui/skeleton";
 
 const IDL = require("@/public/idl.json");
 
@@ -285,7 +286,12 @@ export default function ResolutionUI({
 	}
 
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return (
+			<div className="w-full sm:w-[32rem]">
+				<Skeleton className="h-96 w-full mb-8" />
+				<Skeleton className="h-64 w-full" />
+			</div>
+		);
 	}
 
 	if (resolutionData == null) {
