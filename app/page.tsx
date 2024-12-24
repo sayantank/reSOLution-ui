@@ -1,4 +1,9 @@
 import ResolutionForm from "@/components/form";
+import { constructMetadata } from "@/lib/metadata";
+
+export async function generateMetadata() {
+	return constructMetadata();
+}
 
 export default function Home() {
 	return (

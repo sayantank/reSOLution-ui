@@ -1,8 +1,13 @@
 import ResolutionUI from "@/components/resolution-ui";
+import { constructMetadata } from "@/lib/metadata";
 import { programId } from "@/lib/program";
 import { getResolutionPDA } from "@/lib/utils";
 import { PublicKey } from "@solana/web3.js";
 import { redirect } from "next/navigation";
+
+export async function generateMetadata() {
+	return constructMetadata();
+}
 
 export default async function ResolutionPage({
 	params,
