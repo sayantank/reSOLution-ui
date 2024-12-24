@@ -49,7 +49,11 @@ export default function RootLayout({
 					<main className="h-dvh overflow-y-auto flex flex-col">
 						<div className="h-16 w-full flex items-center justify-between px-6 my-2 mb-4 sm:mb-0">
 							<Link href="/">
-								<h1 className="text-2xl font-bold font-logo">reSOLution</h1>
+								<div className="flex items-center space-x-1.5">
+									<p className="text-4xl">💰</p>
+
+									<h1 className="text-2xl font-bold font-logo">reSOLution</h1>
+								</div>
 							</Link>
 							<WalletButton />
 						</div>
