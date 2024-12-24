@@ -5,6 +5,7 @@ import {
 	calculateDays,
 	cn,
 	createVersionedTransaction,
+	getExplorerURL,
 	handleSendAndConfirmTransaction,
 	lamportsToSol,
 } from "@/lib/utils";
@@ -18,7 +19,7 @@ import {
 } from "@solana/web3.js";
 import PostItNote from "./post-it";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Button } from "./ui/button";
 import {
 	Card,
@@ -33,6 +34,9 @@ import { useAnchorProvider } from "@/hooks/use-anchor-provider";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { MAX_U64 } from "@/app/consts";
+import { ExternalLinkIcon } from "lucide-react";
+import Link from "next/link";
+import { cluster } from "@/app/providers";
 
 const IDL = require("@/public/idl.json");
 
@@ -283,7 +287,19 @@ export default function ResolutionUI({
 			{stakeData != null && (
 				<Card>
 					<CardHeader className="border-b mb-6">
-						<CardTitle>Stake Details</CardTitle>
+						<div className="w-full flex items-center justify-between">
+							<CardTitle>Stake Details</CardTitle>
+							<Link
+								href={getExplorerURL(
+									"account",
+									cluster,
+									resolutionData.stakeAccount.toString(),
+								)}
+								target="_blank"
+							>
+								<ExternalLinkIcon className="size-4 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
+							</Link>
+						</div>
 						<CardDescription>
 							Details of the stake account created for your resolution.
 						</CardDescription>
