@@ -89,10 +89,6 @@ export default function ResolutionForm() {
 		}
 	}, [publicKey, setValue]);
 
-	useEffect(() => {
-		console.log("stakeAmount", stakeAmount);
-	}, [stakeAmount]);
-
 	async function onSubmit(data: FormValues) {
 		if (publicKey == null || signTransaction == null) {
 			return;
@@ -166,7 +162,7 @@ export default function ResolutionForm() {
 					)}
 				>
 					{resolutionData == null && (
-						<DialogTrigger>
+						<DialogTrigger asChild>
 							<SettingsIcon
 								className={cn(
 									formState.errors.validatorVoteAccount &&
@@ -175,7 +171,7 @@ export default function ResolutionForm() {
 							/>
 						</DialogTrigger>
 					)}
-					<DialogContent className="font-sans">
+					<DialogContent>
 						<DialogHeader>
 							<DialogTitle>Validator Configuration</DialogTitle>
 							<DialogDescription>
@@ -204,7 +200,10 @@ export default function ResolutionForm() {
 								<>
 									<Input
 										type="text"
-										className={cn(fieldState.invalid && "border-red-400")}
+										className={cn(
+											fieldState.invalid && "border-red-400",
+											"font-mono",
+										)}
 										{...field}
 									/>
 								</>
