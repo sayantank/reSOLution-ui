@@ -1,5 +1,7 @@
+import { cluster } from "@/app/providers";
 import type { BN } from "@coral-xyz/anchor";
 import {
+	type Cluster,
 	type Connection,
 	LAMPORTS_PER_SOL,
 	PublicKey,
@@ -8,6 +10,8 @@ import {
 	VersionedTransaction,
 } from "@solana/web3.js";
 import { clsx, type ClassValue } from "clsx";
+import { CircleCheck, ExternalLink } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
@@ -128,9 +132,52 @@ export async function handleSendAndConfirmTransaction(
 
 	toast.promise(confirmationPromise, {
 		loading: "Waiting for confirmation...",
-		success: "Transaction confirmed!",
+		success: (_) => {
+			return (
+				<div className="w-full flex items-center justify-between">
+					<div className="flex items-center space-x-1">
+						<CircleCheck className="size-4" />
+						<p className="font-medium">Transaction submitted successfully!</p>
+					</div>
+					<Link
+						href={getExplorerURL("transaction", cluster, txSignature)}
+						target="_blank"
+					>
+						<ExternalLink className="size-4 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
+					</Link>
+				</div>
+			);
+		},
 		error: "Failed to confirm transaction.",
 	});
 
-	return await confirmationPromise;
+	const confirmed = await confirmationPromise;
+
+	return {
+		txSignature,
+		confirmed,
+	};
+}
+
+export function getExplorerURL(
+	type: "account" | "transaction",
+	cluster: Cluster,
+	value: string,
+) {
+	const url = new URL("https://explorer.solana.com");
+
+	switch (type) {
+		case "account":
+			url.pathname = `/address/${value}`;
+			break;
+		case "transaction":
+			url.pathname = `/tx/${value}`;
+			break;
+	}
+
+	if (cluster !== "mainnet-beta") {
+		url.searchParams.set("cluster", cluster);
+	}
+
+	return url.toString();
 }
