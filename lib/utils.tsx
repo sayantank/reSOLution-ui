@@ -1,5 +1,6 @@
 import { cluster } from "@/app/providers";
 import type { BN } from "@coral-xyz/anchor";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import {
 	type Cluster,
 	type Connection,
@@ -183,4 +184,15 @@ export function getExplorerURL(
 	}
 
 	return url.toString();
+}
+
+export function getValidatorURL(cluster: Cluster, identity?: string | null) {
+	if (identity == null) {
+		return null;
+	}
+
+	const urlCluster =
+		cluster === WalletAdapterNetwork.Mainnet ? "mainnet" : cluster;
+
+	return `https://www.validators.app/api/v1/validators/${urlCluster}/${identity}`;
 }
