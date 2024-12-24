@@ -9,6 +9,7 @@ interface PostItNoteProps {
 	onChange?: (value: string) => void;
 	placeholder?: string;
 	className?: string;
+	disabled?: boolean;
 }
 
 const PostItNote: React.FC<PostItNoteProps> = ({
@@ -18,6 +19,7 @@ const PostItNote: React.FC<PostItNoteProps> = ({
 	onChange,
 	placeholder,
 	className,
+	disabled,
 }) => {
 	const colorClasses: Record<PostItColor, string> = {
 		yellow: "bg-yellow-200",
@@ -52,6 +54,7 @@ const PostItNote: React.FC<PostItNoteProps> = ({
 						value={value}
 						onChange={(e) => onChange(e.target.value)}
 						placeholder={placeholder}
+						disabled={disabled}
 						className={cn(
 							"w-full h-full resize-none bg-transparent no-scrollbar",
 							"font-logo",

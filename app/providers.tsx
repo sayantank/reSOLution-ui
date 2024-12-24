@@ -17,9 +17,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
+export const cluster = WalletAdapterNetwork.Devnet;
+
 export function Providers({ children }: { children: React.ReactNode }) {
 	// The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
-	const network = WalletAdapterNetwork.Devnet;
+	const network = cluster;
 
 	// You can also provide a custom RPC endpoint.
 	const endpoint = useMemo(() => clusterApiUrl(network), [network]);

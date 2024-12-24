@@ -5,10 +5,11 @@ import { useAnchorProvider } from "./use-anchor-provider";
 import type { Resolution } from "@/lib/program";
 import { Program } from "@coral-xyz/anchor";
 import { useMemo } from "react";
+import { getResolutionPDA } from "@/lib/utils";
 
 const IDL = require("@/public/idl.json");
 
-export function useResolution({ resolutionKey }: { resolutionKey: PublicKey }) {
+export function useResolution({ owner }: { owner?: PublicKey | null }) {
 	const { connection } = useConnection();
 	const provider = useAnchorProvider();
 
@@ -16,15 +17,21 @@ export function useResolution({ resolutionKey }: { resolutionKey: PublicKey }) {
 		return new Program<Resolution>(IDL, provider);
 	}, [provider]);
 
+	const resolutionKey = useMemo(
+		() => (owner ? getResolutionPDA(owner, program.programId) : null),
+		[owner, program],
+	);
+
 	return useQuery({
 		queryKey: [
 			"resolution",
 			{
 				endpoint: connection.rpcEndpoint,
-				resolutionKey: resolutionKey.toString(),
+				owner: owner?.toString(),
 			},
 		],
-		queryFn: () => program.account.resolutionAccount.fetch(resolutionKey),
+		queryFn: () => program.account.resolutionAccount.fetch(resolutionKey ?? ""),
+		enabled: owner != null && resolutionKey != null,
 		refetchOnWindowFocus: false,
 		refetchInterval: 300 * 1000,
 	});

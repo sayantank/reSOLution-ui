@@ -47,7 +47,7 @@ export default function ResolutionUI({
 		isLoading,
 		refetch: refetchResolution,
 	} = useResolution({
-		resolutionKey: new PublicKey(resolutionKey),
+		owner: new PublicKey(owner),
 	});
 
 	const { data: stakeData, refetch: refetchStake } = useStakeAccount({
@@ -59,10 +59,6 @@ export default function ResolutionUI({
 	const { connection } = useConnection();
 	const { connected, publicKey, signTransaction } = useWallet();
 	const provider = useAnchorProvider();
-
-	useEffect(() => {
-		console.log(stakeData?.value);
-	}, [stakeData]);
 
 	const isOwner = useMemo(() => {
 		if (!connected || publicKey == null) {
@@ -156,7 +152,7 @@ export default function ResolutionUI({
 			return;
 		}
 
-		const confirmed = await handleSendAndConfirmTransaction(
+		const { confirmed } = await handleSendAndConfirmTransaction(
 			connection,
 			signedTransaction,
 		);
@@ -206,7 +202,7 @@ export default function ResolutionUI({
 			return;
 		}
 
-		const confirmed = await handleSendAndConfirmTransaction(
+		const { confirmed } = await handleSendAndConfirmTransaction(
 			connection,
 			signedTransaction,
 		);
@@ -258,7 +254,7 @@ export default function ResolutionUI({
 			return;
 		}
 
-		const confirmed = await handleSendAndConfirmTransaction(
+		const { confirmed } = await handleSendAndConfirmTransaction(
 			connection,
 			signedTransaction,
 		);

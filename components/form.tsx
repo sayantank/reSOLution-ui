@@ -41,6 +41,7 @@ import { useAnchorProvider } from "@/hooks/use-anchor-provider";
 import WalletButton from "./wallet-btn";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useResolution } from "@/hooks/solana";
 
 const IDL = require("@/public/idl.json");
 
@@ -61,6 +62,8 @@ export default function ResolutionForm() {
 	const router = useRouter();
 	const { connection } = useConnection();
 	const { connected, publicKey, signTransaction } = useWallet();
+
+	const { data: resolutionData, refetch } = useResolution({ owner: publicKey });
 
 	const { control, handleSubmit, setValue, formState, watch } =
 		useForm<FormValues>({
@@ -137,13 +140,13 @@ export default function ResolutionForm() {
 			return;
 		}
 
-		const confirmed = await handleSendAndConfirmTransaction(
+		const { confirmed } = await handleSendAndConfirmTransaction(
 			connection,
 			signedTransaction,
 		);
 
 		if (confirmed) {
-			router.push(`/resolution/${publicKey.toString()}`);
+			refetch();
 		}
 	}
 
@@ -152,21 +155,20 @@ export default function ResolutionForm() {
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<div
 					className={cn(
-						"w-full flex items-center justify-between mb-4",
+						"w-full flex items-center justify-end mb-4",
 						publicKey != null ? "opacity-100" : "opacity-0",
 					)}
 				>
-					<p className={cn("text-lg font-medium")}>
-						{publicKey?.toString().slice(0, 6)}...'s resolution,
-					</p>
-					<DialogTrigger>
-						<SettingsIcon
-							className={cn(
-								formState.errors.validatorVoteAccount &&
-									"text-destructive animate-pulse",
-							)}
-						/>
-					</DialogTrigger>
+					{resolutionData == null && (
+						<DialogTrigger>
+							<SettingsIcon
+								className={cn(
+									formState.errors.validatorVoteAccount &&
+										"text-destructive animate-pulse",
+								)}
+							/>
+						</DialogTrigger>
+					)}
 					<DialogContent className="font-sans">
 						<DialogHeader>
 							<DialogTitle>Advanced Configuration</DialogTitle>
@@ -212,17 +214,22 @@ export default function ResolutionForm() {
 					rules={{ required: true, minLength: 1, maxLength: 256 }}
 					render={({ field }) => (
 						<PostItNote
-							placeholder="Write your resolution..."
+							placeholder={
+								resolutionData != null
+									? "You already have a resolution ¯\\_(ツ)_/¯"
+									: "Write your resolution..."
+							}
 							value={field.value}
 							onChange={field.onChange}
 							className="mb-8"
+							disabled={resolutionData != null}
 						/>
 					)}
 				/>
 
 				{!connected ? (
 					<WalletButton className="w-full" />
-				) : (
+				) : resolutionData == null ? (
 					<div>
 						<div className="flex items-center space-x-2">
 							<Controller
@@ -303,11 +310,27 @@ export default function ResolutionForm() {
 						<Button
 							type="submit"
 							className="w-full mt-4"
-							disabled={!formState.isValid || formState.isSubmitting}
+							disabled={
+								!formState.isValid ||
+								formState.isSubmitting ||
+								resolutionData != null
+							}
 						>
-							Submit
+							{resolutionData != null
+								? "You already have a resolution"
+								: "Submit"}
 						</Button>
 					</div>
+				) : (
+					<Button
+						type="button"
+						className="w-full"
+						onClick={() =>
+							router.push(`/resolution/${resolutionData.owner.toString()}`)
+						}
+					>
+						Go to my resolution
+					</Button>
 				)}
 			</form>
 		</Dialog>
