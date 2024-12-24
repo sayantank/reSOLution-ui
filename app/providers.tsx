@@ -7,7 +7,11 @@ import {
 	WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
+import {
+	SolflareWalletAdapter,
+	PhantomWalletAdapter,
+	KeystoneWalletAdapter,
+} from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 
@@ -42,6 +46,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
 			 * in the npm package `@solana/wallet-adapter-wallets`.
 			 */
 			new SolflareWalletAdapter({ network }),
+			new PhantomWalletAdapter({ network }),
+			new KeystoneWalletAdapter({ network }),
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[network],
