@@ -14,6 +14,7 @@ import { clusterApiUrl } from "@solana/web3.js";
 // Default styles that can be overridden by your app
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const queryClient = new QueryClient();
 
@@ -51,7 +52,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 			<WalletProvider wallets={wallets} autoConnect>
 				<WalletModalProvider>
 					<QueryClientProvider client={queryClient}>
-						{children}
+						<TooltipProvider>{children}</TooltipProvider>
 					</QueryClientProvider>
 				</WalletModalProvider>
 			</WalletProvider>

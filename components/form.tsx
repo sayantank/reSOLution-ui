@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import PostItNote from "./post-it";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Button } from "./ui/button";
@@ -12,7 +12,7 @@ import {
 } from "@/lib/utils";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "./ui/input";
-import { SettingsIcon } from "lucide-react";
+import { CircleAlert, SettingsIcon } from "lucide-react";
 import {
 	Dialog,
 	DialogClose,
@@ -42,6 +42,7 @@ import WalletButton from "./wallet-btn";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useResolution } from "@/hooks/solana";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const IDL = require("@/public/idl.json");
 
@@ -78,6 +79,7 @@ export default function ResolutionForm() {
 		});
 
 	const approvers = watch("approvers");
+	const stakeAmount = watch("stake");
 
 	const provider = useAnchorProvider();
 
@@ -86,6 +88,10 @@ export default function ResolutionForm() {
 			setValue("publicKey", publicKey.toString());
 		}
 	}, [publicKey, setValue]);
+
+	useEffect(() => {
+		console.log("stakeAmount", stakeAmount);
+	}, [stakeAmount]);
 
 	async function onSubmit(data: FormValues) {
 		if (publicKey == null || signTransaction == null) {
@@ -245,12 +251,32 @@ export default function ResolutionForm() {
 											placeholder="25"
 											className={cn(
 												fieldState.error != null && "border-red-400",
+												stakeAmount > 10 && "border-yellow-400",
 											)}
 											{...field}
 										/>
-										<p className="absolute right-0 top-1/4 mr-4 text-muted-foreground">
-											SOL
-										</p>
+										<Tooltip delayDuration={200}>
+											<div
+												className={cn(
+													"absolute right-0 top-1/4 mr-4 text-muted-foreground flex items-center space-x-2",
+													stakeAmount > 10
+														? "text-yellow-500"
+														: "text-muted-foreground",
+												)}
+											>
+												{stakeAmount > 10 && (
+													<TooltipTrigger>
+														<CircleAlert className="size-4" />
+													</TooltipTrigger>
+												)}
+												<p>SOL</p>
+											</div>
+											<TooltipContent className="border-yellow-400">
+												<p className="text-yellow-500 text-base">
+													That's a lot of SOL!
+												</p>
+											</TooltipContent>
+										</Tooltip>
 									</div>
 								)}
 							/>
