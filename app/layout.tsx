@@ -8,6 +8,7 @@ import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/sonner";
 import WalletButton from "@/components/wallet-btn";
 import Link from "next/link";
+import MenuDrawer from "@/components/drawer";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -47,7 +48,7 @@ export default function RootLayout({
 			>
 				<Providers>
 					<main className="h-dvh overflow-y-auto flex flex-col">
-						<div className="h-16 w-full flex items-center justify-between px-6 my-2 mb-4 sm:mb-0">
+						<div className="h-16 w-full flex items-center justify-between px-6 my-4 sm:mb-0">
 							<Link href="/">
 								<div className="flex items-center space-x-1.5">
 									<p className="text-4xl">💰</p>
@@ -55,7 +56,23 @@ export default function RootLayout({
 									<h1 className="text-2xl font-bold font-logo">reSOLution</h1>
 								</div>
 							</Link>
-							<WalletButton />
+							<MenuDrawer />
+							<div className="hidden sm:flex items-center space-x-8">
+								<Link href="/how">
+									<p className="text-muted-foreground hover:underline hover:text-primary transition-all">
+										How does it work?
+									</p>
+								</Link>
+								<Link
+									href="https://github.com/sayantank/reSOLution"
+									target="_blank"
+								>
+									<p className="text-muted-foreground hover:underline hover:text-primary transition-all">
+										Github
+									</p>
+								</Link>
+								<WalletButton />
+							</div>
 						</div>
 						<div className="flex-1">{children}</div>
 						<div className="flex justify-center mt-8 mb-2">
