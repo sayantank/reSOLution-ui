@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { cn, getResolutionPDA } from "@/lib/utils";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "./ui/input";
-import { CircleAlert, SettingsIcon } from "lucide-react";
+import { CircleAlert, ExternalLink, SettingsIcon } from "lucide-react";
 import {
 	Dialog,
 	DialogClose,
@@ -42,6 +42,8 @@ import {
 	createVersionedTransaction,
 	handleSendAndConfirmTransaction,
 } from "@/lib/transactions";
+import Link from "next/link";
+import Validator from "./validator";
 
 const IDL = require("@/public/idl.json");
 
@@ -208,6 +210,31 @@ export default function ResolutionForm() {
 								</>
 							)}
 						/>
+
+						<div className="space-y-2">
+							<div className="w-full flex items-center justify-between">
+								<h3>Recommended Validator</h3>
+								<Link
+									href="https://www.validators.app/validators?locale=en&network=mainnet"
+									target="_blank"
+								>
+									<div className="flex items-center space-x-1 group text-muted-foreground hover:text-primary">
+										<p>Find more</p>
+										<ExternalLink className="size-4 cursor-pointer transition-colors" />
+									</div>
+								</Link>
+							</div>
+							<Validator
+								onClick={(e) => {
+									e.preventDefault();
+									setValue(
+										"validatorVoteAccount",
+										"9jYFwBfbjYmvasFbJyES9apLJDTkwtbgSDRWanHEvcRw",
+									);
+								}}
+								url="https://www.validators.app/api/v1/validators/mainnet/SDEVqCDyc3YzjrDn375SMWKpZo1m7tbZ12fsenF48x1.json"
+							/>
+						</div>
 
 						<DialogClose asChild>
 							<Button>Continue</Button>
