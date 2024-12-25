@@ -1,15 +1,10 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import PostItNote from "./post-it";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Button } from "./ui/button";
-import {
-	cn,
-	createVersionedTransaction,
-	getResolutionPDA,
-	handleSendAndConfirmTransaction,
-} from "@/lib/utils";
+import { cn, getResolutionPDA } from "@/lib/utils";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { CircleAlert, SettingsIcon } from "lucide-react";
@@ -43,6 +38,10 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useResolution } from "@/hooks/solana";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import {
+	createVersionedTransaction,
+	handleSendAndConfirmTransaction,
+} from "@/lib/transactions";
 
 const IDL = require("@/public/idl.json");
 

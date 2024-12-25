@@ -1,14 +1,7 @@
 "use client";
 
 import { useEpochInfo, useResolution, useStakeAccount } from "@/hooks/solana";
-import {
-	calculateDays,
-	cn,
-	createVersionedTransaction,
-	getExplorerURL,
-	handleSendAndConfirmTransaction,
-	lamportsToSol,
-} from "@/lib/utils";
+import { calculateDays, cn, getExplorerURL, lamportsToSol } from "@/lib/utils";
 import {
 	type ParsedAccountData,
 	PublicKey,
@@ -38,6 +31,19 @@ import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import { cluster } from "@/app/providers";
 import { Skeleton } from "./ui/skeleton";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "./ui/dialog";
+import { getXLink } from "@/lib/utils";
+import {
+	createVersionedTransaction,
+	handleSendAndConfirmTransaction,
+} from "@/lib/transactions";
 
 const IDL = require("@/public/idl.json");
 
@@ -74,6 +80,14 @@ export default function ResolutionUI({
 
 		return publicKey.toString() === owner;
 	}, [connected, publicKey, owner]);
+
+	const shareXLink = useMemo(() => {
+		if (resolutionData == null) {
+			return "#";
+		}
+
+		return getXLink(resolutionData, isOwner);
+	}, [resolutionData, isOwner]);
 
 	const isApprover = useMemo(() => {
 		if (!connected || publicKey == null || resolutionData == null) {
@@ -299,117 +313,138 @@ export default function ResolutionUI({
 	}
 
 	return (
-		<div>
-			<div className={cn("w-full flex items-center justify-between mb-4")}>
-				<p className={cn("text-lg font-medium")}>
-					{resolutionData.owner.toString().slice(0, 6)}...'s resolution,
-				</p>
-				<button
-					type="button"
-					onClick={copyToClipboard}
-					className={cn(
-						"text-lg font-medium hover:underline cursor-pointer transition-all",
-					)}
-				>
-					{isShareLinkCopied ? "Link copied!" : "Share"}
-				</button>
-			</div>
-			<PostItNote className="mb-8">{resolutionData.text}</PostItNote>
-			{stakeData != null && (
-				<Card>
-					<CardHeader className="border-b mb-6">
-						<div className="w-full flex items-center justify-between">
-							<CardTitle>Stake Details</CardTitle>
-							<Link
-								href={getExplorerURL(
-									"account",
-									cluster,
-									resolutionData.stakeAccount.toString(),
-								)}
-								target="_blank"
-							>
-								<ExternalLinkIcon className="size-4 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
+		<Dialog>
+			<div>
+				<div className={cn("w-full flex items-center justify-between mb-4")}>
+					<p className={cn("text-lg font-medium")}>
+						{resolutionData.owner.toString().slice(0, 6)}...'s resolution,
+					</p>
+					<DialogTrigger asChild>
+						<button
+							type="button"
+							className={cn(
+								"text-lg font-medium hover:underline cursor-pointer transition-all focus:outline-none",
+							)}
+						>
+							{isShareLinkCopied ? "Link copied!" : "Share"}
+						</button>
+					</DialogTrigger>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>Share resolution</DialogTitle>
+							<DialogDescription>
+								Let everyone know that you just bet on yourself on reSOLution!
+							</DialogDescription>
+						</DialogHeader>
+						<div className="flex w-full items-center justify-end space-x-2">
+							<Button type="button" onClick={copyToClipboard}>
+								{isShareLinkCopied ? "Link copied!" : "Copy Link"}
+							</Button>
+							<Link href={shareXLink} target="_blank">
+								<Button type="button">Share on X</Button>
 							</Link>
 						</div>
-						<CardDescription>
-							Details of the stake account created for your resolution.
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<div className="flex">
-							<div className="space-y-0.5 flex-1">
-								<p>Stake:</p>
-								<h3 className="text-lg font-semibold">
-									{lamportsToSol(resolutionData.stakeAmount)} SOL
-								</h3>
-							</div>
-							<div className="space-y-0.5 flex-1">
-								<p>Balance:</p>
-								<h3 className="text-lg font-semibold">
-									{lamportsToSol(stakeData?.value?.lamports)} SOL
-								</h3>
-							</div>
-						</div>
-						<div className="flex mt-4">
-							<div className="space-y-0.5 flex-1">
-								<p>Approvals:</p>
-								<h3 className="text-lg font-semibold">
-									{resolutionData.approvers.length -
-										resolutionData.approvedBy.length}{" "}
-									<span className="font-normal text-base">left</span>
-								</h3>
-							</div>
-							<div className="space-y-0.5 flex-1">
-								<p>Lockup:</p>
-								<h3 className="text-lg font-semibold">
-									{
-										calculateDays(
-											resolutionData.startTime,
-											resolutionData.endTime,
-										).remaining
-									}{" "}
-									<span className="font-normal text-base">days remaining</span>
-								</h3>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-			)}
-			{isOwner && (
-				<div className="space-y-2">
-					{isDeactivated ? (
-						<Button
-							className="mt-4 w-full"
-							disabled={!isResolutionReady}
-							onClick={handleClaim}
-						>
-							{isClaimable ? "Claim" : "You can't claim yet"}
-						</Button>
-					) : (
-						<Button
-							className="mt-4 w-full"
-							disabled={!isResolutionReady}
-							onClick={handleDeactivate}
-						>
-							{isResolutionReady ? "Deactivate" : "You can't deactivate yet"}
-						</Button>
-					)}
+					</DialogContent>
 				</div>
-			)}
-			{isApprover && (
-				<Button
-					className="mt-4 w-full"
-					onClick={handleApprove}
-					disabled={
-						!isApprover ||
-						resolutionData.approvedBy
-							.map((p) => p.toString())
-							.includes(publicKey?.toString() ?? "")
-					}
-				>
-					Approve
-				</Button>
-			)}
-		</div>
+				<PostItNote className="mb-8">{resolutionData.text}</PostItNote>
+				{stakeData != null && (
+					<Card>
+						<CardHeader className="border-b mb-6">
+							<div className="w-full flex items-center justify-between">
+								<CardTitle>Stake Details</CardTitle>
+								<Link
+									href={getExplorerURL(
+										"account",
+										cluster,
+										resolutionData.stakeAccount.toString(),
+									)}
+									target="_blank"
+								>
+									<ExternalLinkIcon className="size-4 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
+								</Link>
+							</div>
+							<CardDescription>
+								Details of the stake account created for your resolution.
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<div className="flex">
+								<div className="space-y-0.5 flex-1">
+									<p>Stake:</p>
+									<h3 className="text-lg font-semibold">
+										{lamportsToSol(resolutionData.stakeAmount)} SOL
+									</h3>
+								</div>
+								<div className="space-y-0.5 flex-1">
+									<p>Balance:</p>
+									<h3 className="text-lg font-semibold">
+										{lamportsToSol(stakeData?.value?.lamports)} SOL
+									</h3>
+								</div>
+							</div>
+							<div className="flex mt-4">
+								<div className="space-y-0.5 flex-1">
+									<p>Approvals:</p>
+									<h3 className="text-lg font-semibold">
+										{resolutionData.approvers.length -
+											resolutionData.approvedBy.length}{" "}
+										<span className="font-normal text-base">left</span>
+									</h3>
+								</div>
+								<div className="space-y-0.5 flex-1">
+									<p>Lockup:</p>
+									<h3 className="text-lg font-semibold">
+										{
+											calculateDays(
+												resolutionData.startTime,
+												resolutionData.endTime,
+											).remaining
+										}{" "}
+										<span className="font-normal text-base">
+											days remaining
+										</span>
+									</h3>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+				)}
+				{isOwner && (
+					<div className="space-y-2">
+						{isDeactivated ? (
+							<Button
+								className="mt-4 w-full"
+								disabled={!isResolutionReady}
+								onClick={handleClaim}
+							>
+								{isClaimable ? "Claim" : "You can't claim yet"}
+							</Button>
+						) : (
+							<Button
+								className="mt-4 w-full"
+								disabled={!isResolutionReady}
+								onClick={handleDeactivate}
+							>
+								{isResolutionReady ? "Deactivate" : "You can't deactivate yet"}
+							</Button>
+						)}
+					</div>
+				)}
+				{isApprover && (
+					<Button
+						className="mt-4 w-full"
+						onClick={handleApprove}
+						disabled={
+							!isApprover ||
+							resolutionData.approvedBy
+								.map((p) => p.toString())
+								.includes(publicKey?.toString() ?? "")
+						}
+					>
+						Approve
+					</Button>
+				)}
+			</div>
+		</Dialog>
 	);
 }

@@ -1,4 +1,3 @@
-import { cluster } from "@/app/providers";
 import type { BN } from "@coral-xyz/anchor";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import {
@@ -6,14 +5,8 @@ import {
 	type Connection,
 	LAMPORTS_PER_SOL,
 	PublicKey,
-	type TransactionInstruction,
-	TransactionMessage,
-	VersionedTransaction,
 } from "@solana/web3.js";
 import { clsx, type ClassValue } from "clsx";
-import { CircleCheck, ExternalLink } from "lucide-react";
-import Link from "next/link";
-import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
 const TIMEOUT_MS = 15000;
@@ -97,72 +90,6 @@ export function calculateDays(start: BN, end: BN) {
 	};
 }
 
-export async function createVersionedTransaction(
-	connection: Connection,
-	ixs: TransactionInstruction[],
-	payerKey: PublicKey,
-) {
-	const {
-		value: { blockhash },
-	} = await connection.getLatestBlockhashAndContext();
-
-	const messageLegacy = new TransactionMessage({
-		payerKey,
-		recentBlockhash: blockhash,
-		instructions: ixs,
-	}).compileToLegacyMessage();
-
-	return new VersionedTransaction(messageLegacy);
-}
-
-export async function handleSendAndConfirmTransaction(
-	connection: Connection,
-	transaction: VersionedTransaction,
-) {
-	const sendPromise = connection.sendTransaction(transaction);
-
-	toast.promise(sendPromise, {
-		loading: "Submitting transaction...",
-		success: "Transaction submitted successfully!",
-		error: "Failed to submit transaction.",
-	});
-
-	const txSignature = await sendPromise;
-
-	const confirmationPromise = waitForConfirmation(txSignature, connection);
-
-	toast.promise(confirmationPromise, {
-		loading: "Waiting for confirmation...",
-		success: (confirmed) => {
-			if (confirmed) {
-				return (
-					<div className="w-full flex items-center justify-between">
-						<div className="flex items-center space-x-1">
-							<CircleCheck className="size-4" />
-							<p className="font-medium">Transaction submitted successfully!</p>
-						</div>
-						<Link
-							href={getExplorerURL("transaction", cluster, txSignature)}
-							target="_blank"
-						>
-							<ExternalLink className="size-4 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
-						</Link>
-					</div>
-				);
-			}
-			return "Failed to confirm transaction.";
-		},
-		error: "Failed to confirm transaction.",
-	});
-
-	const confirmed = await confirmationPromise;
-
-	return {
-		txSignature,
-		confirmed,
-	};
-}
-
 export function getExplorerURL(
 	type: "account" | "transaction",
 	cluster: Cluster,
@@ -195,4 +122,42 @@ export function getValidatorURL(cluster: Cluster, identity?: string | null) {
 		cluster === WalletAdapterNetwork.Mainnet ? "mainnet" : cluster;
 
 	return `https://www.validators.app/api/v1/validators/${urlCluster}/${identity}`;
+}
+
+export function getXLink(
+	resolution: {
+		owner: PublicKey;
+		text: string;
+		approvers: PublicKey[];
+		approvedBy: PublicKey[];
+		stakeAmount: BN;
+		stakeAccount: PublicKey;
+		startTime: BN;
+		endTime: BN;
+		bump: number;
+	},
+	isOwner: boolean,
+) {
+	const baseUrl = "https://x.com/intent/tweet";
+	const params = new URLSearchParams();
+
+	let text: string | undefined;
+
+	switch (isOwner) {
+		case true:
+			text = `I just bet ${lamportsToSol(resolution.stakeAmount)} SOL on myself on reSOLution 💰!
+			
+Check it out! 
+${window.location.href}`;
+			break;
+		case false:
+			text = `Somebody bet ${lamportsToSol(resolution.stakeAmount)} SOL on themselves on reSOLution 💰!
+			
+Check it out!
+${window.location.href}`;
+	}
+
+	params.append("text", text);
+
+	return `${baseUrl}?${params.toString()}`;
 }
