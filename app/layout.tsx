@@ -75,7 +75,7 @@ export default function RootLayout({
 							</div>
 						</div>
 						<div className="flex-1">{children}</div>
-						<div className="flex justify-center mt-8 mb-2">
+						<div className="flex justify-center mt-12 mb-2">
 							<p>
 								something by{" "}
 								<Link href="https://x.com/sayantanxyz" target="_blank">
