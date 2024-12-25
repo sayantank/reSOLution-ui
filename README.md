@@ -25,3 +25,7 @@ If you don't complete your resolution by the deadline, your initial stake is ret
 
 - **Frontend**: Next.js, TailwindCSS, shadcn/ui, React Query, TypeScript
 - **Blockchain**: Solana
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
