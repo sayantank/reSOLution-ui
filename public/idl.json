@@ -1,5 +1,5 @@
 {
-	"address": "3P9v3idHKsRsSg3FfwBE5YjPTzzdq4We4BVhvmZftmxZ",
+	"address": "4j1DyH5Z3uVTGpDKSVBEk494Cw3MVvApCFoZHGZg9AN3",
 	"metadata": {
 		"name": "resolution",
 		"version": "0.1.0",
@@ -77,6 +77,10 @@
 				{
 					"name": "stake_history",
 					"address": "SysvarStakeHistory1111111111111111111111111"
+				},
+				{
+					"name": "incinerator_account",
+					"writable": true
 				},
 				{
 					"name": "stake_program"

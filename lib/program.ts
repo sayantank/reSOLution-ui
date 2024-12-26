@@ -1,7 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
 
 export const programId = new PublicKey(
-	"3P9v3idHKsRsSg3FfwBE5YjPTzzdq4We4BVhvmZftmxZ",
+	"4j1DyH5Z3uVTGpDKSVBEk494Cw3MVvApCFoZHGZg9AN3",
 );
 
 /**
@@ -11,7 +11,7 @@ export const programId = new PublicKey(
  * IDL can be found at `target/idl/resolution.json`.
  */
 export type Resolution = {
-	address: "3P9v3idHKsRsSg3FfwBE5YjPTzzdq4We4BVhvmZftmxZ";
+	address: "4j1DyH5Z3uVTGpDKSVBEk494Cw3MVvApCFoZHGZg9AN3";
 	metadata: {
 		name: "resolution";
 		version: "0.1.0";
@@ -89,6 +89,10 @@ export type Resolution = {
 				{
 					name: "stakeHistory";
 					address: "SysvarStakeHistory1111111111111111111111111";
+				},
+				{
+					name: "incineratorAccount";
+					writable: true;
 				},
 				{
 					name: "stakeProgram";

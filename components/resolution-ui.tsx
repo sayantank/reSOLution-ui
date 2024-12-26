@@ -266,6 +266,9 @@ export default function ResolutionUI({
 				stakeAccount: new PublicKey(resolutionData.stakeAccount),
 				clock: SYSVAR_CLOCK_PUBKEY,
 				stakeHistory: SYSVAR_STAKE_HISTORY_PUBKEY,
+				incineratorAccount: new PublicKey(
+					"1nc1nerator11111111111111111111111111111111",
+				),
 				stakeProgram: StakeProgram.programId,
 			})
 			.instruction();
