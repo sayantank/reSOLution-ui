@@ -13,7 +13,6 @@ import {
 	KeystoneWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { clusterApiUrl } from "@solana/web3.js";
 
 // Default styles that can be overridden by your app
 import "@solana/wallet-adapter-react-ui/styles.css";
@@ -22,14 +21,16 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 const queryClient = new QueryClient();
 
-export const cluster = WalletAdapterNetwork.Devnet;
+export const cluster = WalletAdapterNetwork.Mainnet;
+
+const IRONFORGE_URL = process.env.NEXT_PUBLIC_IRONFORGE_URL!;
 
 export function Providers({ children }: { children: React.ReactNode }) {
 	// The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
 	const network = cluster;
 
 	// You can also provide a custom RPC endpoint.
-	const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+	const endpoint = IRONFORGE_URL;
 
 	const wallets = useMemo(
 		() => [
