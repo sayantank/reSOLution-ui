@@ -54,6 +54,11 @@ export default function RootLayout({
 							</Link>
 							<MenuDrawer />
 							<div className="hidden sm:flex items-center space-x-8">
+								<Link href="/search">
+									<p className="text-muted-foreground hover:underline hover:text-primary transition-all">
+										Search
+									</p>
+								</Link>
 								<Link href="/how">
 									<p className="text-muted-foreground hover:underline hover:text-primary transition-all">
 										How does it work?

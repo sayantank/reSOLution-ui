@@ -18,7 +18,13 @@ export default function MenuDrawer() {
 				<MenuIcon className="size-6" />
 			</DrawerTrigger>
 			<DrawerContent>
-				<DrawerHeader className="text-left">
+				<DrawerHeader className="text-center">
+					<Link href="/search">
+						<p className="text-muted-foreground hover:underline hover:text-primary transition-all">
+							Search
+						</p>
+					</Link>
+
 					<Link href="/how">
 						<p className="text-muted-foreground hover:underline hover:text-primary transition-all">
 							How does it work?
