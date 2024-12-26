@@ -3,7 +3,7 @@ import { constructMetadata } from "@/lib/metadata";
 import { programId } from "@/lib/program";
 import { getResolutionPDA } from "@/lib/utils";
 import { PublicKey } from "@solana/web3.js";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata() {
 	return constructMetadata();
@@ -15,9 +15,16 @@ export default async function ResolutionPage({
 	params: Promise<{ address: string }>;
 }) {
 	const address = (await params).address;
-	const owner = new PublicKey(address);
 
-	const resolutionPDA = getResolutionPDA(owner, programId);
+	let resolutionPDA: PublicKey | null = null;
+	try {
+		const owner = new PublicKey(address);
+
+		resolutionPDA = getResolutionPDA(owner, programId);
+	} catch (e) {
+		console.warn("Invalid resolution account", { address, resolutionPDA });
+		notFound();
+	}
 
 	// TODO: Use correct endpoint
 	const res = await fetch("https://api.devnet.solana.com", {
@@ -43,14 +50,14 @@ export default async function ResolutionPage({
 			address,
 			resolutionPDA,
 		});
-		redirect("/");
+		notFound();
 	}
 
 	const json = await res.json();
 
 	if (json.result?.value?.owner !== programId.toString()) {
-		console.error("Invalid resolution account", { address, resolutionPDA });
-		redirect("/");
+		console.warn("Invalid resolution account", { address, resolutionPDA });
+		notFound();
 	}
 
 	return (

@@ -118,11 +118,7 @@ export default function ResolutionUI({
 		const deactivationEpoch = (stakeData.value?.data as ParsedAccountData)
 			.parsed.info.stake.delegation.deactivationEpoch;
 
-		if (deactivationEpoch === MAX_U64) {
-			return false;
-		}
-
-		return true;
+		return deactivationEpoch !== MAX_U64;
 	}, [stakeData]);
 
 	const isClaimable = useMemo(() => {

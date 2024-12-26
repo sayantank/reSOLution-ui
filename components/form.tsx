@@ -273,7 +273,7 @@ export default function ResolutionForm() {
 									<div className="flex-1 relative">
 										<Input
 											type="text"
-											placeholder="25"
+											placeholder="5"
 											className={cn(
 												fieldState.error != null && "border-red-400",
 												stakeAmount > 10 && "border-yellow-400",
