@@ -29,6 +29,7 @@ export default async function ResolutionPage({
 	const res = await fetch(process.env.NEXT_PUBLIC_IRONFORGE_URL!, {
 		headers: {
 			"Content-Type": "application/json",
+			"X-Ironforge-Auth-Token": process.env.IRONFORGE_AUTH_TOKEN!,
 		},
 		method: "POST",
 		body: JSON.stringify({
