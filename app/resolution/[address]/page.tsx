@@ -22,12 +22,12 @@ export default async function ResolutionPage({
 
 		resolutionPDA = getResolutionPDA(owner, programId);
 	} catch (e) {
-		console.warn("Invalid resolution account", { address, resolutionPDA });
+		console.warn("Failed to get resolution PDA", { address, resolutionPDA });
 		notFound();
 	}
 
 	// TODO: Use correct endpoint
-	const res = await fetch("https://api.devnet.solana.com", {
+	const res = await fetch(process.env.NEXT_PUBLIC_IRONFORGE_URL!, {
 		headers: {
 			"Content-Type": "application/json",
 		},
