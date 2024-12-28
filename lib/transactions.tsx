@@ -5,10 +5,11 @@ import {
 	TransactionMessage,
 	VersionedTransaction,
 } from "@solana/web3.js";
-import { CircleCheck, Link, ExternalLink } from "lucide-react";
+import { CircleCheck, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { waitForConfirmation, getExplorerURL } from "./utils";
 import { cluster } from "@/app/providers";
+import Link from "next/link";
 
 export async function createVersionedTransaction(
 	connection: Connection,
