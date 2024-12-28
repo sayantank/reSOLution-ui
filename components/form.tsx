@@ -49,7 +49,7 @@ const IDL = require("@/public/idl.json");
 
 // Mainnet - 9jYFwBfbjYmvasFbJyES9apLJDTkwtbgSDRWanHEvcRw
 const WATCHTOWER_VALIDATOR_VOTE_ACCOUNT =
-	"5iic7eCs3tGKQvscTaY3Lb8mr6HvogpZKoxgxazxdiCA";
+	"9jYFwBfbjYmvasFbJyES9apLJDTkwtbgSDRWanHEvcRw";
 
 type FormValues = {
 	resolutionText: string;
