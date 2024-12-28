@@ -232,7 +232,7 @@ export default function ResolutionForm() {
 										"9jYFwBfbjYmvasFbJyES9apLJDTkwtbgSDRWanHEvcRw",
 									);
 								}}
-								url="https://www.validators.app/api/v1/validators/mainnet/SDEVqCDyc3YzjrDn375SMWKpZo1m7tbZ12fsenF48x1.json"
+								validator="SDEVqCDyc3YzjrDn375SMWKpZo1m7tbZ12fsenF48x1"
 							/>
 						</div>
 

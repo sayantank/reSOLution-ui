@@ -4,28 +4,27 @@ import { lamportsToSol } from "@/lib/utils";
 import type { MouseEventHandler } from "react";
 
 export default function Validator({
-	url,
+	validator,
 	onClick,
-}: { url: string; onClick?: MouseEventHandler<HTMLButtonElement> }) {
+}: { validator: string; onClick?: MouseEventHandler<HTMLButtonElement> }) {
 	const { data, isLoading } = useQuery({
 		queryKey: [
 			"validator",
 			{
-				url: url,
+				validator,
 			},
 		],
 		queryFn: async () => {
-			// TODO: use cluster
-			const response = await fetch(url, {
+			const response = await fetch(`/api/validator?validator=${validator}`, {
 				headers: {
 					"Content-Type": "application/json",
-					Token: process.env.NEXT_PUBLIC_VALIDATORS_APP_TOKEN!,
 				},
 			});
 
 			if (!response.ok) {
 				console.error("Failed to fetch validator data", {
-					url,
+					validator,
+					response: response.status,
 				});
 				return null;
 			}
