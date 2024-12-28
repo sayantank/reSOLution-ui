@@ -26,7 +26,6 @@ export default async function ResolutionPage({
 		notFound();
 	}
 
-	// TODO: Use correct endpoint
 	const res = await fetch(process.env.NEXT_PUBLIC_IRONFORGE_URL!, {
 		headers: {
 			"Content-Type": "application/json",
