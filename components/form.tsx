@@ -149,7 +149,7 @@ export default function ResolutionForm() {
 		);
 
 		if (confirmed) {
-			refetch();
+			await refetch();
 		}
 	}
 

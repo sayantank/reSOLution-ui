@@ -62,6 +62,7 @@ const PostItNote: React.FC<PostItNoteProps> = ({
 							"placeholder:text-gray-500",
 							"absolute inset-0",
 							"p-6 pt-14",
+							"whitespace-pre-wrap",
 						)}
 					/>
 				) : (
@@ -71,6 +72,7 @@ const PostItNote: React.FC<PostItNoteProps> = ({
 							"font-logo",
 							"absolute inset-0",
 							"p-6 pt-14",
+							"whitespace-pre-wrap",
 						)}
 					>
 						{children}
