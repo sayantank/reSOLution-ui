@@ -25,7 +25,10 @@ export const cluster = WalletAdapterNetwork.Mainnet;
 
 const IRONFORGE_URL = process.env.NEXT_PUBLIC_IRONFORGE_URL!;
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({
+	children,
+	bearerToken,
+}: { children: React.ReactNode; bearerToken: string }) {
 	// The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
 	const network = cluster;
 
@@ -55,7 +58,19 @@ export function Providers({ children }: { children: React.ReactNode }) {
 	);
 
 	return (
-		<ConnectionProvider endpoint={endpoint}>
+		<ConnectionProvider
+			endpoint={endpoint}
+			config={{
+				fetch: (url, init) =>
+					fetch(url, {
+						...init,
+						headers: {
+							...init?.headers,
+							Authorization: `Bearer ${bearerToken}`,
+						},
+					}),
+			}}
+		>
 			<WalletProvider wallets={wallets} autoConnect>
 				<WalletModalProvider>
 					<QueryClientProvider client={queryClient}>

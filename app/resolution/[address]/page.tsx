@@ -3,6 +3,7 @@ import { constructMetadata } from "@/lib/metadata";
 import { programId } from "@/lib/program";
 import { getResolutionPDA } from "@/lib/utils";
 import { PublicKey } from "@solana/web3.js";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata() {
@@ -26,10 +27,20 @@ export default async function ResolutionPage({
 		notFound();
 	}
 
+	const cookieStore = await cookies();
+	const bearerToken = cookieStore.get("session")?.value;
+	if (bearerToken == null) {
+		console.error("JWT Token is not set", {
+			bearerToken,
+		});
+
+		throw new Error("JWT Token is not set");
+	}
+
 	const res = await fetch(process.env.NEXT_PUBLIC_IRONFORGE_URL!, {
 		headers: {
 			"Content-Type": "application/json",
-			"X-Ironforge-Auth-Token": process.env.IRONFORGE_AUTH_TOKEN!,
+			Authorization: `Bearer ${bearerToken}`,
 		},
 		method: "POST",
 		body: JSON.stringify({
