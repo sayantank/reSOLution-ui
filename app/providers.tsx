@@ -20,10 +20,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { SessionPayload } from "@/lib/auth";
 import { toast } from "sonner";
+import { clusterApiUrl } from "@solana/web3.js";
 
 const queryClient = new QueryClient();
 
-export const cluster = WalletAdapterNetwork.Mainnet;
+export const cluster = WalletAdapterNetwork.Devnet;
 
 const IRONFORGE_URL = process.env.NEXT_PUBLIC_IRONFORGE_URL!;
 
@@ -40,7 +41,7 @@ export function Providers({
 	const network = cluster;
 
 	// You can also provide a custom RPC endpoint.
-	const endpoint = IRONFORGE_URL;
+	const endpoint = clusterApiUrl(network);
 
 	const wallets = useMemo(
 		() => [
