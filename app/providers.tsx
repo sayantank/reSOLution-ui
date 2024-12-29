@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	ConnectionProvider,
 	WalletProvider,
@@ -18,6 +18,8 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import type { SessionPayload } from "@/lib/auth";
+import { toast } from "sonner";
 
 const queryClient = new QueryClient();
 
@@ -27,8 +29,13 @@ const IRONFORGE_URL = process.env.NEXT_PUBLIC_IRONFORGE_URL!;
 
 export function Providers({
 	children,
-	bearerToken,
-}: { children: React.ReactNode; bearerToken: string }) {
+	session,
+}: {
+	children: React.ReactNode;
+	session: { payload: SessionPayload; token: string };
+}) {
+	const [hasWarnedSessionExpiry, setHasWarnedSessionExpiry] = useState(false);
+
 	// The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
 	const network = cluster;
 
@@ -57,6 +64,25 @@ export function Providers({
 		[network],
 	);
 
+	useEffect(() => {
+		const interval = setInterval(() => {
+			if (
+				new Date(session.payload.expires) < new Date() &&
+				!hasWarnedSessionExpiry
+			) {
+				setHasWarnedSessionExpiry(true);
+				toast.warning(
+					"Your session has expired. Please refresh the page to continue.",
+					{
+						dismissible: false,
+					},
+				);
+			}
+		}, 1000);
+
+		return () => clearInterval(interval);
+	}, [session, hasWarnedSessionExpiry]);
+
 	return (
 		<ConnectionProvider
 			endpoint={endpoint}
@@ -66,7 +92,7 @@ export function Providers({
 						...init,
 						headers: {
 							...init?.headers,
-							Authorization: `Bearer ${bearerToken}`,
+							Authorization: `Bearer ${session.token}`,
 						},
 					}),
 			}}

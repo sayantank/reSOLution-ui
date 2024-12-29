@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import WalletButton from "@/components/wallet-btn";
 import Link from "next/link";
 import MenuDrawer from "@/components/drawer";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/auth";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -38,21 +38,20 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const cookieStore = await cookies();
-	const bearerToken = cookieStore.get("session")?.value;
-	if (bearerToken == null) {
-		console.error("JWT Token is not set", {
-			bearerToken,
+	const session = await getSession();
+	if (session == null) {
+		console.error("Session is not set", {
+			session,
 		});
-
-		throw new Error("JWT Token is not set");
+		throw new Error("Session is not set");
 	}
+
 	return (
 		<html lang="en">
 			<body
 				className={`${geistSans.variable} ${pangolin.variable} ${gloriaHallelujah.variable} antialiased font-handwriting`}
 			>
-				<Providers bearerToken={bearerToken}>
+				<Providers session={session}>
 					<main className="h-dvh overflow-y-auto flex flex-col">
 						<div className="h-16 w-full flex items-center justify-between px-6 my-4 sm:mb-0">
 							<Link href="/">
