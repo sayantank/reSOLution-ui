@@ -1,16 +1,37 @@
-import { SignJWT, jwtVerify, importPKCS8 } from "jose";
+import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const privateKey = process.env.IRONFORGE_JWT_SECRET!;
+// Function to convert PEM to Uint8Array
+function pemToUint8Array(pem: string): Uint8Array {
+	// Remove PEM formatting and decode base64
+	const base64 = pem
+		.replace("-----BEGIN PRIVATE KEY-----", "")
+		.replace("-----END PRIVATE KEY-----", "")
+		.replace(/\\n/g, "")
+		.replace(/\n/g, "");
 
-// Clean up the key and ensure proper formatting
-const cleanKey = privateKey
-	.replace(/\\n/g, "\n") // Convert \n string to actual newlines
-	.replace("-----BEGIN RSA PRIVATE KEY-----", "-----BEGIN PRIVATE KEY-----")
-	.replace("-----END RSA PRIVATE KEY-----", "-----END PRIVATE KEY-----");
+	// Decode base64 to binary string
+	const binaryString = atob(base64);
 
-// Import the key using jose's importPKCS8
-const privateKeyObject = await importPKCS8(cleanKey, "RS256");
+	// Convert binary string to Uint8Array
+	return new Uint8Array([...binaryString].map((char) => char.charCodeAt(0)));
+}
+
+// Create the key using Web Crypto API
+const privateKeyPromise = (async () => {
+	const privateKeyData = pemToUint8Array(process.env.IRONFORGE_JWT_SECRET!);
+
+	return await crypto.subtle.importKey(
+		"pkcs8",
+		privateKeyData,
+		{
+			name: "RSASSA-PKCS1-v1_5",
+			hash: "SHA-256",
+		},
+		true,
+		["sign"],
+	);
+})();
 
 export type SessionPayload = {
 	app: string;
@@ -18,15 +39,17 @@ export type SessionPayload = {
 };
 
 export async function encrypt(payload: SessionPayload) {
+	const privateKey = await privateKeyPromise;
 	return await new SignJWT(payload)
 		.setProtectedHeader({ alg: "RS256" })
 		.setIssuedAt()
 		.setExpirationTime("1 min from now")
-		.sign(privateKeyObject);
+		.sign(privateKey);
 }
 
 export async function decrypt(input: string): Promise<SessionPayload> {
-	const { payload } = await jwtVerify<SessionPayload>(input, privateKeyObject, {
+	const privateKey = await privateKeyPromise;
+	const { payload } = await jwtVerify<SessionPayload>(input, privateKey, {
 		algorithms: ["RS256"],
 	});
 	return payload;
