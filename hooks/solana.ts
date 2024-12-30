@@ -2,7 +2,7 @@ import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
 import { useAnchorProvider } from "./use-anchor-provider";
-import type { Resolution } from "@/lib/program";
+import type { Resolution, Deprecated_Resolution } from "@/lib/program";
 import { Program } from "@coral-xyz/anchor";
 import { useMemo } from "react";
 import { getResolutionPDA } from "@/lib/utils";
@@ -13,14 +13,21 @@ import {
 } from "@/lib/solana";
 
 const IDL = require("@/public/idl.json");
+const Deprecated_IDL = require("@/public/deprecated_idl.json");
 
-export function useResolution({ owner }: { owner?: PublicKey | null }) {
+export function useResolution({
+	owner,
+	deprecated = false,
+}: { owner?: PublicKey | null; deprecated?: boolean }) {
 	const { connection } = useConnection();
 	const provider = useAnchorProvider();
 
 	const program = useMemo(() => {
-		return new Program<Resolution>(IDL, provider);
-	}, [provider]);
+		if (!deprecated) {
+			return new Program<Resolution>(IDL, provider);
+		}
+		return new Program<Deprecated_Resolution>(Deprecated_IDL, provider);
+	}, [provider, deprecated]);
 
 	const resolutionKey = useMemo(
 		() => (owner ? getResolutionPDA(owner, program.programId) : null),

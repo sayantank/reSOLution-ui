@@ -64,7 +64,10 @@ export default function DeprecatedResolutionForm() {
 	const { connection } = useConnection();
 	const { connected, publicKey, signTransaction } = useWallet();
 
-	const { data: resolutionData, refetch } = useResolution({ owner: publicKey });
+	const { data: resolutionData, refetch } = useResolution({
+		owner: publicKey,
+		deprecated: true,
+	});
 
 	const { control, handleSubmit, setValue, formState, watch } =
 		useForm<FormValues>({

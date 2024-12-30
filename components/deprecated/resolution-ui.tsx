@@ -59,6 +59,7 @@ export default function DeprecatedResolutionUI({
 		refetch: refetchResolution,
 	} = useResolution({
 		owner: new PublicKey(owner),
+		deprecated: true,
 	});
 
 	const { data: stakeData, refetch: refetchStake } = useStakeAccount({
