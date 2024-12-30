@@ -1,9 +1,8 @@
 "use client";
 
-import { useEpochInfo, useResolution, useStakeAccount } from "@/hooks/solana";
+import { useResolution, useStakeAccount } from "@/hooks/solana";
 import { calculateDays, cn, getExplorerURL, lamportsToSol } from "@/lib/utils";
 import {
-	type ParsedAccountData,
 	PublicKey,
 	StakeProgram,
 	SYSVAR_CLOCK_PUBKEY,
@@ -44,6 +43,7 @@ import {
 	createVersionedTransaction,
 	handleSendAndConfirmTransaction,
 } from "@/lib/transactions";
+import { Badge } from "./ui/badge";
 
 const IDL = require("@/public/idl.json");
 
@@ -64,8 +64,6 @@ export default function ResolutionUI({
 	const { data: stakeData, refetch: refetchStake } = useStakeAccount({
 		stakeKey: resolutionData?.stakeAccount,
 	});
-
-	const { data: epochData } = useEpochInfo();
 
 	const { connection } = useConnection();
 	const { connected, publicKey, signTransaction } = useWallet();
@@ -115,26 +113,16 @@ export default function ResolutionUI({
 			return false;
 		}
 
-		const deactivationEpoch = (stakeData.value?.data as ParsedAccountData)
-			.parsed.info.stake.delegation.deactivationEpoch;
+		const {
+			stakeAccount: {
+				stake: {
+					delegation: { deactivationEpoch },
+				},
+			},
+		} = stakeData;
 
-		return deactivationEpoch !== MAX_U64;
+		return deactivationEpoch !== BigInt(MAX_U64);
 	}, [stakeData]);
-
-	const isClaimable = useMemo(() => {
-		if (stakeData == null || epochData == null) {
-			return false;
-		}
-
-		const deactivationEpoch = (stakeData.value?.data as ParsedAccountData)
-			.parsed.info.stake.delegation.deactivationEpoch;
-
-		const currentEpoch = epochData.epoch;
-
-		return (
-			isResolutionReady && isDeactivated && currentEpoch >= deactivationEpoch
-		);
-	}, [isDeactivated, isResolutionReady, epochData, stakeData]);
 
 	async function copyToClipboard() {
 		if (typeof window === "undefined") {
@@ -350,7 +338,12 @@ export default function ResolutionUI({
 					<Card>
 						<CardHeader className="border-b mb-6">
 							<div className="w-full flex items-center justify-between">
-								<CardTitle>Stake Details</CardTitle>
+								<div className="flex items-center space-x-2">
+									<CardTitle>Stake Account</CardTitle>
+									<Badge variant="secondary" className="font-normal">
+										{stakeData.stakeActivation.status}
+									</Badge>
+								</div>
 								<Link
 									href={getExplorerURL(
 										"account",
@@ -377,7 +370,10 @@ export default function ResolutionUI({
 								<div className="space-y-0.5 flex-1">
 									<p>Balance:</p>
 									<h3 className="text-lg font-semibold">
-										{lamportsToSol(stakeData?.value?.lamports)} SOL
+										{lamportsToSol(
+											stakeData?.stakeAccountParsed?.value?.lamports,
+										)}{" "}
+										SOL
 									</h3>
 								</div>
 							</div>
@@ -413,10 +409,15 @@ export default function ResolutionUI({
 						{isDeactivated ? (
 							<Button
 								className="mt-4 w-full"
-								disabled={!isResolutionReady}
+								disabled={
+									!isResolutionReady ||
+									stakeData?.stakeActivation.status !== "inactive"
+								}
 								onClick={handleClaim}
 							>
-								{isClaimable ? "Claim" : "You can't claim yet"}
+								{stakeData?.stakeActivation.status === "inactive"
+									? "Claim"
+									: "You can't claim yet"}
 							</Button>
 						) : (
 							<Button

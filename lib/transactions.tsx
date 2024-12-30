@@ -53,7 +53,7 @@ export async function handleSendAndConfirmTransaction(
 					<div className="w-full flex items-center justify-between">
 						<div className="flex items-center space-x-1">
 							<CircleCheck className="size-4" />
-							<p className="font-medium">Transaction submitted successfully!</p>
+							<p className="font-medium">Transaction confirmed!</p>
 						</div>
 						<Link
 							href={getExplorerURL("transaction", cluster, txSignature)}

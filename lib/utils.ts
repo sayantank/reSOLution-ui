@@ -151,7 +151,7 @@ Check it out!
 ${window.location.href}`;
 			break;
 		case false:
-			text = `Somebody bet ${lamportsToSol(resolution.stakeAmount)} SOL on themselves on reSOLution 💰!
+			text = `Someone bet ${lamportsToSol(resolution.stakeAmount)} SOL on themselves on reSOLution 💰!
 			
 Check it out!
 ${window.location.href}`;
