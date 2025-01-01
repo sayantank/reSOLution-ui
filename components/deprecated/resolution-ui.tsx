@@ -20,7 +20,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../ui/card";
-import type { Resolution } from "@/lib/program";
+import type { Deprecated_Resolution } from "@/lib/program";
 import { Program } from "@coral-xyz/anchor";
 import { useAnchorProvider } from "@/hooks/use-anchor-provider";
 import { useRouter } from "next/navigation";
@@ -45,7 +45,7 @@ import {
 } from "@/lib/transactions";
 import { Badge } from "../ui/badge";
 
-const IDL = require("@/public/idl.json");
+const IDL = require("@/public/deprecated_idl.json");
 
 export default function DeprecatedResolutionUI({
 	resolutionKey,
@@ -146,7 +146,7 @@ export default function DeprecatedResolutionUI({
 			return;
 		}
 
-		const program = new Program<Resolution>(IDL, provider);
+		const program = new Program<Deprecated_Resolution>(IDL, provider);
 
 		const ix = await program.methods
 			.approveResolution()
@@ -194,7 +194,7 @@ export default function DeprecatedResolutionUI({
 			return;
 		}
 
-		const program = new Program<Resolution>(IDL, provider);
+		const program = new Program<Deprecated_Resolution>(IDL, provider);
 
 		const ix = await program.methods
 			.deactivateResolutionStake()
@@ -245,7 +245,7 @@ export default function DeprecatedResolutionUI({
 			return;
 		}
 
-		const program = new Program<Resolution>(IDL, provider);
+		const program = new Program<Deprecated_Resolution>(IDL, provider);
 
 		const ix = await program.methods
 			.closeResolution()
