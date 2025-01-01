@@ -387,6 +387,12 @@ export default function DeprecatedResolutionForm() {
 						Go to my resolution
 					</Button>
 				)}
+				<div className="mt-4">
+					<p className="text-muted-foreground">
+						Note: This is a deprecated version of reSOLution. It will be removed
+						in the future.
+					</p>
+				</div>
 			</form>
 		</Dialog>
 	);
