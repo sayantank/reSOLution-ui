@@ -44,6 +44,7 @@ import {
 	handleSendAndConfirmTransaction,
 } from "@/lib/transactions";
 import { Badge } from "../ui/badge";
+import WalletButton from "../wallet-btn";
 
 const IDL = require("@/public/deprecated_idl.json");
 
@@ -445,6 +446,7 @@ export default function DeprecatedResolutionUI({
 						Approve
 					</Button>
 				)}
+				{!connected && <WalletButton className="w-full mt-4" />}
 				<div className="mt-4">
 					<p className="text-muted-foreground">
 						Note: This is a deprecated version of reSOLution. It will be removed

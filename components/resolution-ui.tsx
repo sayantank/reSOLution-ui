@@ -44,6 +44,7 @@ import {
 	handleSendAndConfirmTransaction,
 } from "@/lib/transactions";
 import { Badge } from "./ui/badge";
+import WalletButton from "./wallet-btn";
 
 const IDL = require("@/public/idl.json");
 
@@ -444,6 +445,7 @@ export default function ResolutionUI({
 						Approve
 					</Button>
 				)}
+				{!connected && <WalletButton className="w-full mt-4" />}
 			</div>
 		</Dialog>
 	);
