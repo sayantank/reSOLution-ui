@@ -44,8 +44,8 @@ export function useResolution({
 		],
 		queryFn: () => program.account.resolutionAccount.fetch(resolutionKey ?? ""),
 		enabled: owner != null && resolutionKey != null,
-		refetchOnWindowFocus: false,
-		refetchInterval: 300 * 1000,
+		refetchOnWindowFocus: true,
+		refetchInterval: 60 * 1000,
 	});
 }
 
