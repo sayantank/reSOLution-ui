@@ -339,6 +339,16 @@ export default function ResolutionForm() {
 										validate: (value) => {
 											try {
 												new PublicKey(value);
+
+												// Check for duplicates by comparing with other approver values
+												const duplicateCount = approvers.filter(
+													(approver) => approver === value,
+												).length;
+
+												if (duplicateCount > 1) {
+													return "Duplicate approver addresses are not allowed";
+												}
+
 												return true;
 											} catch (e) {
 												console.error("error:", e);
